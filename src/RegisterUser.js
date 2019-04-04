@@ -1,4 +1,6 @@
 import React, { Component} from "react";
+import AlertMessage from "./components/AlertMessage";
+
 const {
     Stitch,
     RemoteMongoClient,
@@ -12,12 +14,21 @@ class RegisterUser extends Component {
     super(props);
     this.state = {email: '', 
                   password: '',
-                  outcome: 'N/A'
+                  outcomeMsg: '',
+                  outcomeType: ''
                 };
 
     this.handleEmail = this.handleEmail.bind(this);
     this.handlePassword = this.handlePassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  reportSuccess(msg) {
+    this.setState({outcomeMsg: msg, outcomeType: "success"});
+  }
+  
+  reportError(msg) {
+    this.setState({outcomeMsg: msg, outcomeType: "error"});
   }
 
   handleEmail(event) {
@@ -40,10 +51,10 @@ class RegisterUser extends Component {
   sendConfirmation(emailPassClient) {
     emailPassClient.registerWithEmail(this.state.email, this.state.password)
     .then(() => {
-       console.log("Successfully sent account confirmation email!");
+       this.reportSuccess("Successfully sent account confirmation email!");
     })
     .catch(err => {
-       console.log("Error registering new user:", err);
+      this.reportError("Error registering new user:", err);
     });
   }
   
@@ -81,10 +92,7 @@ class RegisterUser extends Component {
     }
     
     const emailPassClient = client.auth.getProviderClient(UserPasswordAuthProviderClient.factory);
-    this.login(client);
-    
-    
-    
+    this.sendConfirmation(emailPassClient);
     
   }
 
@@ -93,24 +101,25 @@ class RegisterUser extends Component {
       <div>
         <h3>Hi there! Please fill in your details below to register:</h3>
         <form className="form-horizontal" onSubmit={this.handleSubmit}>
-        <div className="form-group">
-          <label className="control-label col-sm-2" htmlFor="email">Email:</label>
-          <div className="col-sm-10">
-            <input type="email" className="form-control" id="email" placeholder="Enter email" value={this.state.email} onChange={this.handleEmail} />
+          <div className="form-group">
+            <label className="control-label col-sm-2" htmlFor="email">Email:</label>
+            <div className="col-sm-10">
+              <input type="email" className="form-control" id="email" placeholder="Enter email" value={this.state.email} onChange={this.handleEmail} />
+            </div>
           </div>
-        </div>
-        <div className="form-group">
-          <label className="control-label col-sm-2" htmlFor="pwd">Password:</label>
-          <div className="col-sm-10">
-            <input type="password" className="form-control" id="pwd" placeholder="Enter password" value={this.state.password} onChange={this.handlePassword} />
+          <div className="form-group">
+            <label className="control-label col-sm-2" htmlFor="pwd">Password:</label>
+            <div className="col-sm-10">
+              <input type="password" className="form-control" id="pwd" placeholder="Enter password" value={this.state.password} onChange={this.handlePassword} />
+            </div>
           </div>
-        </div>
-        <div className="form-group">
-          <div className="col-sm-offset-2 col-sm-10">
-            <button type="submit" className="btn btn-default btn-outline-primary">Submit</button>
+          <div className="form-group">
+            <div className="col-sm-offset-2 col-sm-10">
+              <button type="submit" className="btn btn-default btn-outline-primary">Submit</button>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+        <AlertMessage result={this.state.outcomeType} msg={this.state.outcomeMsg} />
       </div>
     );
   }
