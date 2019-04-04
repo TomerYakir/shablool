@@ -1,5 +1,5 @@
 import React, { Component} from "react";
-import AlertMessage from "./components/AlertMessage";
+import AlertMessage from "./Components/AlertMessage";
 
 const {
     Stitch,
@@ -21,6 +21,7 @@ class RegisterUser extends Component {
     this.handleEmail = this.handleEmail.bind(this);
     this.handlePassword = this.handlePassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleResendConfirmation = this.handleResendConfirmation.bind(this);
   }
 
   reportSuccess(msg) {
@@ -32,23 +33,27 @@ class RegisterUser extends Component {
   }
 
   handleEmail(event) {
-    this.setState({email: event.target.value});
+    this.setState({email: event.target.value, outcomeMsg: ""});
   }
   
   handlePassword(event) {
-    this.setState({password: event.target.value});
+    this.setState({password: event.target.value, outcomeMsg: ""});
   }
 
-  resendConfirmation(emailPassClient) {
-    emailPassClient.resendConfirmationEmail(this.state.email).then(() => {
-       console.log("Successfully resent account confirmation email!");
-    })
-    .catch(err => {
-       console.log("Error resending:", err);
-    });
+  getEmailPassClient() {
+    var client;
+    try {
+      client = Stitch.getAppClient('shabloolgame-ooiog');
+    } catch(e) {
+      client = Stitch.initializeDefaultAppClient('shabloolgame-ooiog');
+    }
+    const emailPassClient = client.auth.getProviderClient(UserPasswordAuthProviderClient.factory);
+    return emailPassClient;
   }
-  
-  sendConfirmation(emailPassClient) {
+
+  handleSubmit(event) {
+    event.preventDefault();
+    const emailPassClient = this.getEmailPassClient();
     emailPassClient.registerWithEmail(this.state.email, this.state.password)
     .then(() => {
        this.reportSuccess("Successfully sent account confirmation email!");
@@ -56,44 +61,25 @@ class RegisterUser extends Component {
     .catch(err => {
       this.reportError("Error registering new user:", err);
     });
+    
   }
   
-  login(client) {
-    const credential = new UserPasswordCredential(this.state.email, this.state.password);
-    client.auth.loginWithCredential(credential)
-  // Returns a promise that resolves to the authenticated user
-  .then(authedUser => console.log(`successfully logged in with id: ${authedUser.id}`))
-  .catch(err => console.error(`login failed with error: ${err}`))
-  }
-
-  sendResetPasswordEmail(emailPassClient) {
-    emailPassClient.sendResetPasswordEmail(this.state.email).then(() => {
-      console.log("Successfully sent password reset email!");
-    }).catch(err => {
-      console.log("Error sending password reset email:", err);
+  handleResendConfirmation() {
+    const emailPassClient = this.getEmailPassClient();
+    emailPassClient.resendConfirmationEmail(this.state.email).then(() => {
+      this.reportSuccess("Successfully resent account confirmation email!");
+    })
+    .catch(err => {
+      this.reportError("Error resending confirmation:", err);
     });
   }
 
-  resetPassword(emailPassClient, token, tokenId) {
-    emailPassClient.resetPassword(token, tokenId, this.state.password).then(() => {
-      console.log("Successfully reset password!");
-    }).catch(err => {
-      console.log("Error resetting password:", err);
-    });
-  }
-
-  handleSubmit(event) {
-    event.preventDefault();
-    var client;
-    try {
-      client = Stitch.getAppClient('shabloolgame-ooiog');
-    } catch(e) {
-      client = Stitch.initializeDefaultAppClient('shabloolgame-ooiog');
+  renderResend() {
+    if (this.state.outcomeType === "success") {
+      return (
+        <button type="button" onClick={this.handleResendConfirmation} className="btn btn-default btn-outline-primary">Resend Confirmation</button>
+      )  
     }
-    
-    const emailPassClient = client.auth.getProviderClient(UserPasswordAuthProviderClient.factory);
-    this.sendConfirmation(emailPassClient);
-    
   }
 
   render(){
@@ -115,7 +101,12 @@ class RegisterUser extends Component {
           </div>
           <div className="form-group">
             <div className="col-sm-offset-2 col-sm-10">
-              <button type="submit" className="btn btn-default btn-outline-primary">Submit</button>
+              <div>
+                <button type="submit" className="btn btn-default btn-outline-primary">Submit</button>
+              </div>
+              <div>
+                {this.renderResend()}
+              </div>
             </div>
           </div>
         </form>
