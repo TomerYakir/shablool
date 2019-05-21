@@ -1,7 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import RegisterUser from "./RegisterUser";
-import LoginForm from "./LoginForm";
+import Login from "./Components/Users/Login";
+import RegisterUser from "./Components/Users/RegisterUser";
+import ConfirmUser from "./Components/Users/ConfirmUser";
+import ResetPassword from "./Components/Users/ResetPassword";
 
 function Index() {
   return <h2>Home</h2>;
@@ -12,8 +14,10 @@ function AppRouter() {
     <Router>
       <div>
         <Route path="/" exact component={Index} />
-        <Route path="/register" component={RegisterUser} />
-        <Route path="/login" component={LoginForm} />
+        <Route path="/users/register" component={RegisterUser} />
+        <Route path="/users/confirmEmail" component={ConfirmUser} />
+        <Route path="/users/login" component={Login} />
+        <Route path="/users/resetPassword" component={ResetPassword} />
       </div>
     </Router>
   );

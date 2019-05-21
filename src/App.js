@@ -1,6 +1,6 @@
 import React, { Component} from "react";
 
-import LoginForm from "./LoginForm"
+import Login from "./Components/Users/Login"
 import "./App.css";
 
 class App extends Component{
@@ -10,7 +10,7 @@ class App extends Component{
     const loggedIn = false;
     if (!loggedIn) {
       return (
-        <LoginForm/>
+        <Login/>
       );
     } else {
       return(

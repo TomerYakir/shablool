@@ -1,6 +1,6 @@
 import React, { Component} from "react";
-import AlertMessage from "./Components/AlertMessage";
-
+import { Redirect } from "react-router-dom";
+import AlertMessage from "../Common/AlertMessage";
 
 const {
     Stitch,
@@ -9,53 +9,50 @@ const {
     UserPasswordCredential
 } = require('mongodb-stitch-browser-sdk');
 
-export default class LoginForm extends Component {
+export default class Login extends Component {
 
-  /*
-  sendResetPasswordEmail(emailPassClient) {
-    emailPassClient.sendResetPasswordEmail(this.state.email).then(() => {
-      console.log("Successfully sent password reset email!");
-    }).catch(err => {
-      console.log("Error sending password reset email:", err);
-    });
-  }
-
-  resetPassword(emailPassClient, token, tokenId) {
-    emailPassClient.resetPassword(token, tokenId, this.state.password).then(() => {
-      console.log("Successfully reset password!");
-    }).catch(err => {
-      console.log("Error resetting password:", err);
-    });
-  }
-  */
-  
   constructor(props) {
     super(props);
-    this.state = {email: '', 
+    this.state = {email: '',
                   password: '',
                   outcomeMsg: '',
-                  outcomeType: ''
+                  outcomeType: '',
+                  redirectToResetPwd: false
                 };
 
     this.handleEmail = this.handleEmail.bind(this);
     this.handlePassword = this.handlePassword.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
+    this.handleResetPassword = this.handleResetPassword.bind(this);
+    this.renderRedirect = this.renderRedirect.bind(this);
   }
+
+
 
   reportSuccess(msg) {
     this.setState({outcomeMsg: msg, outcomeType: "success"});
   }
-  
-  reportError(msg) {
-    this.setState({outcomeMsg: msg, outcomeType: "error"});
+
+  reportError(msg, err) {
+    this.setState({outcomeMsg: `${msg} ${err}`, outcomeType: "error"});
   }
 
   handleEmail(event) {
     this.setState({email: event.target.value, outcomeMsg: ""});
   }
-  
+
   handlePassword(event) {
     this.setState({password: event.target.value, outcomeMsg: ""});
+  }
+
+  handleResetPassword() {
+    const client = this.getClient();
+    const emailPassClient = client.auth.getProviderClient(UserPasswordAuthProviderClient.factory);
+    emailPassClient.sendResetPasswordEmail(this.state.email).then(() => {
+      this.reportSuccess("Successfully sent password reset email!");
+    }).catch(err => {
+      this.reportError("Error sending password reset email:", err);
+    });
   }
 
   getClient() {
@@ -73,13 +70,35 @@ export default class LoginForm extends Component {
     const client = this.getClient();
     const credential = new UserPasswordCredential(this.state.email, this.state.password);
     client.auth.loginWithCredential(credential)
-      .then(authedUser => this.reportSuccess(`successfully logged in with id: ${authedUser.id}`))
-      .catch(err => this.reportError(`login failed with error: ${err}`))
+      .then(authedUser => {
+        this.reportSuccess(`successfully logged in with id: ${authedUser.id}`);
+      })
+      .catch(err => {
+        this.reportError(`login failed with error: ${err}`);
+      });
   }
-  
+
+  renderResetPassword() {
+    if (this.state.outcomeType === "error") {
+      return (
+        <button type="button" onClick={this.handleResetPassword} className="btn btn-default btn-outline-primary">Reset Password</button>
+      )
+    }
+  }
+
+  renderRedirect() {
+    if (this.state.redirectToResetPwd) {
+      return <Redirect to={{
+        pathname: '/users/resetPasword',
+        state: { email: this.state.email }
+      }} />
+    }
+  }
+
   render(){
     return(
       <div>
+        {this.renderRedirect()}
         <h3>Hi there! Please fill in your details below to login:</h3>
         <form className="form-horizontal" onSubmit={this.handleLogin}>
           <div className="form-group">
@@ -102,9 +121,9 @@ export default class LoginForm extends Component {
             </div>
           </div>
         </form>
+        {this.renderResetPassword()}
         <AlertMessage result={this.state.outcomeType} msg={this.state.outcomeMsg} />
       </div>
     );
   }
 }
-

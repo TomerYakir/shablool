@@ -1,5 +1,5 @@
 import React, { Component} from "react";
-import AlertMessage from "./Components/AlertMessage";
+import AlertMessage from "../Common/AlertMessage";
 
 const {
     Stitch,
@@ -28,8 +28,8 @@ class RegisterUser extends Component {
     this.setState({outcomeMsg: msg, outcomeType: "success"});
   }
   
-  reportError(msg) {
-    this.setState({outcomeMsg: msg, outcomeType: "error"});
+  reportError(msg, err) {
+    this.setState({outcomeMsg: `${msg} ${err}`, outcomeType: "error"});
   }
 
   handleEmail(event) {
