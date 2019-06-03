@@ -27,8 +27,6 @@ export default class Login extends Component {
     this.renderRedirect = this.renderRedirect.bind(this);
   }
 
-
-
   reportSuccess(msg) {
     this.setState({outcomeMsg: msg, outcomeType: "success"});
   }
@@ -72,6 +70,7 @@ export default class Login extends Component {
     client.auth.loginWithCredential(credential)
       .then(authedUser => {
         this.reportSuccess(`successfully logged in with id: ${authedUser.id}`);
+        this.props.onLogin(authedUser);
       })
       .catch(err => {
         this.reportError(`login failed with error: ${err}`);

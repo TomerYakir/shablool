@@ -1,21 +1,40 @@
 import React, { Component} from "react";
 
-import Login from "./Components/Users/Login"
+import Login from "./Components/Users/Login";
+import GameSelecter from "./Components/Games/GameSelecter";
+
 import "./App.css";
 
 class App extends Component{
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      loggedIn: false,
+      authUser: null
+    }
+    this.onLogin = this.onLogin.bind(this);
+  }
 
-  render(){
-    const loggedIn = false;
+  onLogin(authUser) {
+    this.setState({
+      loggedIn: true,
+      authUser: authUser
+    });
+  }
+
+  render() {
+    const { loggedIn, authUser } = this.state;
     if (!loggedIn) {
       return (
-        <Login/>
+        <Login onLogin={this.onLogin} />
       );
     } else {
       return(
         <div className="App">
-          <h1> Hello, World! </h1>
+          <h1> Shablool Game! </h1>
+          <small>Logged in as: {authUser.id} </small>
+          <GameSelecter />
         </div>
       );
     }
