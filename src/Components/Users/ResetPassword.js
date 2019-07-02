@@ -1,5 +1,4 @@
 import React, { Component} from "react";
-import queryString from "query-string";
 import { Redirect } from "react-router-dom";
 import AlertMessage from "../Common/AlertMessage";
 

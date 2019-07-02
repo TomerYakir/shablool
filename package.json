@@ -4,7 +4,7 @@
   "description": "Teach kids how to read",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "webpack-dev-server --mode development"
   },
   "author": "",
@@ -13,13 +13,16 @@
     "babel-cli": "^6.26.0",
     "babel-preset-react-app": "^3.1.2",
     "bootstrap": "^4.3.1",
+    "file-loader": "^4.0.0",
     "jquery": "^3.3.1",
     "mongodb-stitch-browser-sdk": "^4.3.2",
     "popper.js": "^1.15.0",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-hot-loader": "^4.3.11",
-    "react-router-dom": "^5.0.0"
+    "react-router-dom": "^5.0.0",
+    "underscore": "^1.9.1",
+    "url-loader": "^2.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.0",
@@ -29,6 +32,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.2",
     "css-loader": "^1.0.0",
+    "jest": "^24.8.0",
     "style-loader": "^0.23.0",
     "webpack": "^4.19.1",
     "webpack-cli": "^3.1.1",

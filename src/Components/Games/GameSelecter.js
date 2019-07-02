@@ -1,7 +1,9 @@
 import React, { Component} from "react";
 
+import MatchWordToPic from "./MatchWordToPic";
+
 const AVAILABLE_GAMES = [
-  {key: "matchWordToPic", titles: {"en": "Match word to pic", "he": "התאמת מילה לתמונה"}},
+  {key: "matchWordToPic", titles: {"en": "Match word to pic", "he": "התאמת מילה לתמונה"}, component: <MatchWordToPic />},
   {key: "completeWords", titles: {"en": "Complete words", "he": "השלמת מילים"}}
 ];
 
@@ -19,7 +21,6 @@ export default class GameSelecter extends Component{
   }
 
   onSelectGame(game) {
-    debugger;
     this.setState({
       selectedGame: game
     });
@@ -28,7 +29,6 @@ export default class GameSelecter extends Component{
   render() {
     const { selectedGame } = this.state;
     const { language } = this.props;
-    debugger;
     if (!selectedGame) {
       return (
         <div>
@@ -42,6 +42,7 @@ export default class GameSelecter extends Component{
       return (
         <div>
           selected game: {selectedGame.titles[language]}
+          {selectedGame.component}
         </div>
       )
     }

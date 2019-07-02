@@ -25,7 +25,8 @@ class App extends Component{
 
   render() {
     const { loggedIn, authUser } = this.state;
-    if (!loggedIn) {
+    // TODO - change
+    if (loggedIn) {
       return (
         <Login onLogin={this.onLogin} />
       );
@@ -33,7 +34,7 @@ class App extends Component{
       return(
         <div className="App">
           <h1> Shablool Game! </h1>
-          <small>Logged in as: {authUser.id} </small>
+          <small>Logged in as: {authUser ? authUser.id : "null"} </small>
           <GameSelecter />
         </div>
       );
